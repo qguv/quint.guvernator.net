@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Yotext</title>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript">
+
+      set_text = function(to_set) {
+        document.title = to_set;
+        var h1 = $('h1');
+        h1.show();
+        h1.text(to_set);
+      }
+
+      show_form = function() {
+        var input = document.getElementsByTagName('input')[0];
+        $('button').click(function() {
+          var prefix = [location.protocol, '//', location.host, location.pathname, '?'].join('');
+          window.location.href = prefix + encodeURIComponent(input.value);
+        });
+        $('div').show();
+        input.focus();
+        input.select();
+      }
+
+      $(document).ready(function() {
+        var bigtext = decodeURIComponent(window.location.href.split('?')[1]);
+        if (bigtext == 'undefined') {
+          show_form();
+        } else {
+          set_text(bigtext);
+        }
+      });
+
+    </script>
+  </head>
+  <body>
+    <h1 hidden></h1>
+    <div hidden>
+      <h1>Yotext: The Yo! Misuse Tool</h1>
+      <p>You can send text as a <a href="https://en.wikipedia.org/wiki/Yo_%28app%29">Yo!</a> to your friends. Use the form below and then copy the resulting page URL. Longpress a Yo! contact to send them to the text you just made.</p>
+      <input></input>
+      <button>Make Yo-able!</button>
+    </div>
+  </body>
+</html>
