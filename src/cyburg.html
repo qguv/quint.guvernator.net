@@ -66,29 +66,5 @@
         </tr>
     </tbody>
     </table>
-    <script>
-        for (let a of document.querySelectorAll('a.cmd')) {
-            a.dataset.cmd = a.href;
-            a.href = '#';
-            a.addEventListener('click', function() {
-                this.dataset.restore = this.innerHTML;
-                this.innerHTML = '. . .';
-                fetch(this.dataset.cmd)
-                    .then(response => response.json())
-                    .then(data => new Promise((resolve, reject) => {
-                        if (data.POWER === 'OFF') {
-                            this.innerHTML = 'turn on';
-                            resolve();
-                        } else if (data.POWER === 'ON') {
-                            this.innerHTML = 'turn off';
-                            resolve();
-                        }
-                        reject();
-                    }))
-                    .catch(() => this.innerHTML = this.dataset.restore);
-                return false;
-            });
-        }
-    </script>
 </body>
 </html>
