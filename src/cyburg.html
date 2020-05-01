@@ -1,94 +1,147 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <title>CYBURG</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png" href="favicon.png">
+	<title>cyburgctl</title>
+	<style>
+
+html {
+	background-color: black;
+	color: lightgray;
+}
+td {
+	padding: 0.3em 0.8em;
+}
+a {
+	color: white;
+}
+a.cmd {
+	padding-left: 0.3em;
+	padding-right: 0.3em;
+	display: inline-block;
+}
+ul {
+	list-style: none;
+	padding: 0;
+}
+tr {
+	border-top: 1px solid gray;
+}
+tr:first-child {
+	border-top: none;
+}
+
+	</style>
 </head>
 <body>
-    <h1>CYBURG</h1>
-    <table>
-        <thead>
-            <tr class="header">
-                <th>suffix</th>
-                <th>hardware</th>
-                <th>code</th>
-                <th>location</th>
-                <th>commands</th>
-            </tr>
-        </thead>
-    <tbody>
-        <tr>
-            <td><a href="http://192.168.2.150">150</a></td>
-            <td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
-            <td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp00)</td>
-            <td>speakers</td>
-            <td><a class="cmd" href="http://192.168.2.150/cm?cmnd=power1%202">toggle</a></td>
-        </tr>
-        <tr>
-            <td><a href="http://192.168.2.151">151</a></td>
-            <td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
-            <td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp01)</td>
-            <td>windows</td>
-            <td><a class="cmd" href="http://192.168.2.151/cm?cmnd=power1%202">toggle</a></td>
-        </tr>
-        <tr>
-            <td><a href="http://192.168.2.152">152</a></td>
-            <td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
-            <td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp03)</td>
-            <td>sofa</td>
-            <td><a class="cmd" href="http://192.168.2.152/cm?cmnd=power1%202">toggle</a></td>
-        </tr>
-        <tr>
-            <td><a href="http://192.168.2.153">153</a></td>
-            <td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
-            <td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp03)</td>
-            <td>bedroom</td>
-            <td><a class="cmd" href="http://192.168.2.153/cm?cmnd=power1%202">toggle</a></td>
-        </tr>
-        <tr>
-            <td><a href="http://192.168.2.154">154</a></td>
-            <td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
-            <td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp04)</td>
-            <td>desk</td>
-            <td><a class="cmd" href="http://192.168.2.154/cm?cmnd=power1%202">toggle</a></td>
-        </tr>
-        <tr>
-            <td>—</td>
-        </tr>
-        <tr>
-            <td><a href="http://192.168.2.160">160</a></td>
-            <td><a href="https://www.espressif.com/products/hardware/esp8266ex/overview/">ESP-8266</a></td>
-            <td><a href="https://github.com/qguv/ledpijp">ledpijp</a></td>
-            <td>bathroom</td>
-            <td><a class="cmd" href="http://192.168.2.160/a/rainbow">rainbow</a> <a class="cmd" href="http://192.168.2.160/a/night">night</a></td>
-        </tr>
-    </tbody>
-    </table>
-    <script>
-        for (let a of document.querySelectorAll('a.cmd')) {
-            a.dataset.cmd = a.href;
-            a.href = '#';
-            a.addEventListener('click', function() {
-                this.dataset.restore = this.innerHTML;
-                this.innerHTML = '. . .';
-                fetch(this.dataset.cmd)
-                    .then(response => response.json())
-                    .then(data => new Promise((resolve, reject) => {
-                        if (data.POWER === 'OFF') {
-                            this.innerHTML = 'turn on';
-                            resolve();
-                        } else if (data.POWER === 'ON') {
-                            this.innerHTML = 'turn off';
-                            resolve();
-                        }
-                        reject();
-                    }))
-                    .catch(() => this.innerHTML = this.dataset.restore);
-                return false;
-            });
-        }
-    </script>
+	<h1>CYBURG</h1>
+	<table>
+		<thead>
+			<tr class="header">
+				<th>suffix</th>
+				<th>hardware</th>
+				<th>code</th>
+				<th>location</th>
+				<th>commands</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><a href="http://10.10.10.150">150</a></td>
+				<td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
+				<td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp00)</td>
+				<td>speakers</td>
+				<td><a class="cmd toggle" href="http://10.10.10.150/cm?cmnd=power1%202">toggle</a></td>
+			</tr>
+			<tr>
+				<td><a href="http://10.10.10.151">151</a></td>
+				<td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
+				<td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp01)</td>
+				<td>windows</td>
+				<td><a class="cmd toggle" href="http://10.10.10.151/cm?cmnd=power1%202">toggle</a></td>
+			</tr>
+			<tr>
+				<td><a href="http://10.10.10.152">152</a></td>
+				<td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
+				<td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp03)</td>
+				<td>sofa</td>
+				<td><a class="cmd toggle" href="http://10.10.10.152/cm?cmnd=power1%202">toggle</a></td>
+			</tr>
+			<tr>
+				<td><a href="http://10.10.10.153">153</a></td>
+				<td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
+				<td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp03)</td>
+				<td>bedroom</td>
+				<td><a class="cmd toggle" href="http://10.10.10.153/cm?cmnd=power1%202">toggle</a></td>
+			</tr>
+			<tr>
+				<td><a href="http://10.10.10.154">154</a></td>
+				<td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
+				<td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp04)</td>
+				<td>desk</td>
+				<td><a class="cmd toggle" href="http://10.10.10.154/cm?cmnd=power1%202">toggle</a></td>
+			</tr>
+			<tr>
+				<td>—</td>
+			</tr>
+			<tr>
+				<td><a href="http://10.10.10.160">160</a></td>
+				<td><a href="https://www.espressif.com/products/hardware/esp8266ex/overview/">ESP-8266</a></td>
+				<td><a href="https://github.com/qguv/ledpijp">ledpijp</a></td>
+				<td>bathroom</td>
+				<td>
+					<ul>
+						<li><a class="cmd" href="http://10.10.10.160/a/rainbow">rainbow</a>
+						<li><a class="cmd" href="http://10.10.10.160/a/night">night</a>
+					</ul>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<script>
+
+function run_cmd(a, cmd) {
+	a.innerHTML = '. . .';
+	fetch(cmd)
+		.then(response => response.json())
+		.then(update_power)
+		.catch(() => a.innerHTML = a.dataset.restore);
+}
+
+function update_power(a, data) {
+	return new Promise((resolve, reject) => {
+		if (data.POWER === 'OFF') {
+			a.innerHTML = 'turn on';
+			resolve();
+		} else if (data.POWER === 'ON') {
+			a.innerHTML = 'turn off';
+			resolve();
+		}
+		reject();
+	});
+}
+
+for (let a of document.querySelectorAll('a.cmd')) {
+	a.dataset.restore = a.innerHTML;
+
+	a.dataset.cmd = a.href;
+	a.href = '#';
+
+	a.addEventListener('click', function() {
+		run_cmd(this, this.dataset.cmd);
+		return false;
+	});
+
+	if (a.innerHTML == 'toggle') {
+		const i = a.dataset.cmd.indexOf('=');
+		const power_cmd = a.dataset.cmd.substring(0, i) + '=power1';
+		run_cmd(a, power_cmd);
+	}
+}
+
+	</script>
 </body>
 </html>
+<!-- vim: set noet ts=2: -->
