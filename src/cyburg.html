@@ -35,7 +35,7 @@ tr:first-child {
 
 	</style>
 </head>
-<body>
+<body onload="setup();">
 	<h1>CYBURG</h1>
 	<table>
 		<thead>
@@ -53,35 +53,35 @@ tr:first-child {
 				<td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
 				<td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp00)</td>
 				<td>speakers</td>
-				<td><a class="cmd toggle" href="http://10.10.10.150/cm?cmnd=power1%202">toggle</a></td>
+				<td><a class="cmd tasmota-toggle" href="http://10.10.10.150/cm?cmnd=power1%202">toggle</a></td>
 			</tr>
 			<tr>
 				<td><a href="http://10.10.10.151">151</a></td>
 				<td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
 				<td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp01)</td>
 				<td>windows</td>
-				<td><a class="cmd toggle" href="http://10.10.10.151/cm?cmnd=power1%202">toggle</a></td>
+				<td><a class="cmd tasmota-toggle" href="http://10.10.10.151/cm?cmnd=power1%202">toggle</a></td>
 			</tr>
 			<tr>
 				<td><a href="http://10.10.10.152">152</a></td>
 				<td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
 				<td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp03)</td>
 				<td>sofa</td>
-				<td><a class="cmd toggle" href="http://10.10.10.152/cm?cmnd=power1%202">toggle</a></td>
+				<td><a class="cmd tasmota-toggle" href="http://10.10.10.152/cm?cmnd=power1%202">toggle</a></td>
 			</tr>
 			<tr>
 				<td><a href="http://10.10.10.153">153</a></td>
 				<td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
 				<td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp03)</td>
 				<td>bedroom</td>
-				<td><a class="cmd toggle" href="http://10.10.10.153/cm?cmnd=power1%202">toggle</a></td>
+				<td><a class="cmd tasmota-toggle" href="http://10.10.10.153/cm?cmnd=power1%202">toggle</a></td>
 			</tr>
 			<tr>
 				<td><a href="http://10.10.10.154">154</a></td>
 				<td><a href="https://www.itead.cc/sonoff-s26-wifi-smart-plug.html">Sonoff<a></td>
 				<td><a href="https://github.com/arendst/Tasmota/wiki/Commands">Tasmota</a> (autopijp04)</td>
 				<td>desk</td>
-				<td><a class="cmd toggle" href="http://10.10.10.154/cm?cmnd=power1%202">toggle</a></td>
+				<td><a class="cmd tasmota-toggle" href="http://10.10.10.154/cm?cmnd=power1%202">toggle</a></td>
 			</tr>
 			<tr>
 				<td>—</td>
@@ -102,46 +102,68 @@ tr:first-child {
 	</table>
 	<script>
 
-function run_cmd(a, cmd) {
-	a.innerHTML = '. . .';
-	fetch(cmd)
-		.then(response => response.json())
-		.then(update_power)
-		.catch(() => a.innerHTML = a.dataset.restore);
+async function run_cmd(cmd, el) {
+	el.innerHTML = '...';
+
+	try {
+		const res = await fetch(cmd);
+	} finally {
+		el.innerHTML = el.dataset.restore;
+	}
 }
 
-function update_power(a, data) {
-	return new Promise((resolve, reject) => {
-		if (data.POWER === 'OFF') {
-			a.innerHTML = 'turn on';
-			resolve();
-		} else if (data.POWER === 'ON') {
-			a.innerHTML = 'turn off';
-			resolve();
+async function tasmota_toggle(cmd, el) {
+	const togmap = {
+		'OFF': 'turn on',
+		'ON': 'turn off',
+	};
+
+	el.innerHTML = '...';
+
+	try {
+		const res = await fetch(cmd);
+		const data = await res.json();
+
+		const link_text = togmap[data.POWER];
+		if (typeof link_text === 'undefined') {
+			throw 'unknown response';
 		}
-		reject();
-	});
+
+		el.innerHTML = link_text;
+
+	} catch {
+		el.innerHTML = el.dataset.restore;
+	}
 }
 
-for (let a of document.querySelectorAll('a.cmd')) {
-	a.dataset.restore = a.innerHTML;
+function setup() {
+	for (let el of document.querySelectorAll('a.cmd')) {
 
-	a.dataset.cmd = a.href;
-	a.href = '#';
+		// remove href for exclusive control of clicks
+		el.dataset.cmd = el.href;
+		el.href = '#';
 
-	a.addEventListener('click', function() {
-		run_cmd(this, this.dataset.cmd);
-		return false;
-	});
+		// save original link text in case something goes wrong
+		el.dataset.restore = el.innerHTML;
 
-	if (a.innerHTML == 'toggle') {
-		const i = a.dataset.cmd.indexOf('=');
-		const power_cmd = a.dataset.cmd.substring(0, i) + '=power1';
-		run_cmd(a, power_cmd);
+		let handler = run_cmd;
+		if (el.matches('.tasmota-toggle')) {
+			handler = tasmota_toggle;
+
+			// if it's a toggle command, run it now to get status
+			const i = el.dataset.cmd.indexOf('=');
+			const status_cmd = el.dataset.cmd.substring(0, i) + '=Power1';
+			tasmota_toggle(status_cmd, el);
+		}
+
+		el.addEventListener('click', function (ev) {
+			handler(ev.target.dataset.cmd, ev.target);
+			return false;
+		});
 	}
 }
 
 	</script>
 </body>
 </html>
-<!-- vim: set noet ts=2: -->
+<!-- vim: set noet ts=2 sw=2: -->
